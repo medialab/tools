@@ -3,6 +3,8 @@ import {render} from 'react-dom';
 
 import Application from './Application';
 
+import './Application.scss';
+
 const mountNode = document.getElementById('mount');
 
 let CurrentApplication = Application;
