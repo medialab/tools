@@ -6,8 +6,6 @@ import { Provider } from 'react-redux';
 import configureStore from './redux/configureStore';
 import Application from './Application';
 
-import './Application.scss';
-
 const mountNode = document.getElementById('mount');
 
 let CurrentApplication = Application;
