@@ -72,7 +72,7 @@ export default function analyseData(spreadsheets) {
 
 export const consumeFilters = (allTools, activeFilters) => {
   return activeFilters.reduce((finalData, thatFilter) => {
-    if (thatFilter.acceptedValues && thatFilter.acceptedValues.length) {
+    if (thatFilter.acceptedValues) {
       return finalData.filter(point => {
         return thatFilter.acceptedValues.indexOf(point[thatFilter.key]) > -1;
       });

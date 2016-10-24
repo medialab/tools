@@ -105,7 +105,6 @@ function data(state = DATA_DEFAULT_STATE, action) {
         }, []);
         return filter;
       });
-      console.log(filledFilters);
       return {
         ...state,
         allTools: allTools.slice(),
