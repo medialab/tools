@@ -9,7 +9,8 @@ const Card = ({
   description_en,
   baseline,
   publi,
-  authors
+  authors,
+  by_medialab
 }) => {
   const manetInstance = 'http://manet.medialab.sciences-po.fr/?';
   const captureParams = {
@@ -33,6 +34,7 @@ const Card = ({
          href={url ? url : source}>
       </a>
 
+
       <h3>{name}</h3>
       <p className="baseline">{baseline}</p>
 
@@ -42,7 +44,10 @@ const Card = ({
         {publi ? <a target="_blank" href={publi}>publication</a> : ''}
       </p>
 
-      {/*authors.map((author, index) => ( <span key={index}> {author} </span> ))*/}
+      <p className="by">
+        by { authors.join(', ') }
+      </p>
+
 
     </div>
   )

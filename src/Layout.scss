@@ -32,8 +32,15 @@ a {
   flex-flow: row wrap;
 
   .card {
-    width: 400px;
+    flex: 1;
+    min-width: 20%;
     padding: $large-gutter;
+
+    .by {
+      font-size: 9px;
+      text-align: center;
+      color:grey;
+    }
 
     h3 {
       text-align: center;
