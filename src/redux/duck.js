@@ -2,12 +2,17 @@ import {combineReducers} from 'redux';
 import {createStructuredSelector} from 'reselect';
 
 import {default as gFetchData} from '../lib/fetchData';
-import {default as analyzeData} from '../lib/analyzeData';
+import {
+  default as analyzeData,
+  consumeFilters
+} from '../lib/analyzeData';
 
 /*
  * Action names
  */
 const FETCH_DATA = 'FETCH_DATA';
+const SET_FREE_TEXT_FILTER = 'SET_FREE_TEXT_FILTER';
+const SET_CATEGORY_FILTER = 'SET_CATEGORY_FILTER';
 
 /*
  * Action creators
@@ -22,7 +27,34 @@ const FETCH_DATA = 'FETCH_DATA';
       });
     });
   }
- })
+ });
+
+ export const setFreeTextFilter = (filterString) => ({
+  type: SET_FREE_TEXT_FILTER,
+  payload: filterString
+ });
+
+/*
+ * Expected - e.g. with a boolean:
+ {
+  key: by_dev,
+  acceptedValues: [
+    true,
+    false
+  ]
+ }
+ * Expected - e.g. with a tag:
+ {
+  key: tags,
+  acceptedValues: [
+    'cartography'
+  ]
+ }
+ */
+export const setCategoryFilter = (filter) => ({
+  type: SET_CATEGORY_FILTER,
+  payload: filter
+});
 
 /*
  * Reducers
@@ -38,17 +70,47 @@ function gui(state = GUI_DEFAULT_STATE, action) {
 }
 
 const DATA_DEFAULT_STATE = {
-  allTools: []
+  allTools: [],
+  filteredTools: [],
+  filtersModels: [],
+  filters: []
 }
 
 function data(state = DATA_DEFAULT_STATE, action) {
   switch (action.type) {
-    case FETCH_DATA + '_SUCCESS':
-      const {finalObjects: allTools, filters} = analyzeData(action.result);
+
+    case SET_CATEGORY_FILTER:
+      const filters = state.filters.map(filter => {
+        if (filter.key === action.payload.key) {
+          return {
+            ...filter,
+            acceptedValues: action.payload.acceptedValues
+          }
+        }
+        return filter;
+      });
       return {
         ...state,
-        allTools: action.result.tools.elements,
-        filters
+        filters,
+        filteredTools: consumeFilters(state.allTools, filters)
+      };
+    case FETCH_DATA + '_SUCCESS':
+      const {allTools, filters: filtersInit} = analyzeData(action.result);
+      const filledFilters = filtersInit.map(filter => {
+        filter.acceptedValues = allTools.reduce((values, obj) => {
+          if (values.indexOf(obj[filter.key]) === -1) {
+            return [...values, obj[filter.key]];
+          }
+          return values;
+        }, []);
+        return filter;
+      });
+      console.log(filledFilters);
+      return {
+        ...state,
+        allTools: allTools.slice(),
+        filteredTools: allTools.slice(),
+        filters: filtersInit
       };
     default:
       return state;
@@ -64,8 +126,12 @@ export default combineReducers({
  * Selectors
  */
 
-const allTools = state => state.data.allTools;
+const allTools = state => state.data.allTools || [];
+const filteredTools = state => state.data.filteredTools || [];
+const filters = state => state.data.filters || [];
 
 export const selector = createStructuredSelector({
-  allTools
+  allTools,
+  filteredTools,
+  filters
 });
