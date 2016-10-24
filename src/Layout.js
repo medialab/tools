@@ -5,7 +5,8 @@ import CardsList from './components/CardsList';
 import './Layout.scss';
 
 const Layout = ({
-  filteredTools,
+  filteredTools=[],
+  allTools=[],
   filters = [],
   actions: {
     setCategoryFilter
@@ -14,6 +15,8 @@ const Layout = ({
   <div id="layout-wrapper">
     <aside id="aside-container">
       <h2>Medialab tools</h2>
+
+      <p>{filteredTools.length} / {allTools.length}</p>
       {filters.map((filter, key) => {
 
         const isAccepted = (value) => {
@@ -33,7 +36,7 @@ const Layout = ({
         };
         return (<div className="category-filter-container" key={key}>
           <form style={{marginTop: '1rem'}} className="filterGroup">
-            {filter.optionsEn.map((option, key2) => (
+            {filter.options.map((option, key2) => (
               <div 
                 key={key2}> 
                 <input 
@@ -44,7 +47,7 @@ const Layout = ({
                   name={option.value}/>
                 <label 
                   htmlFor={option.value}>
-                  {option.label}
+                  {option.labels.en} ({option.count})
                 </label>
               </div>
             ))}
