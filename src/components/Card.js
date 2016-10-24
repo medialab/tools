@@ -6,11 +6,13 @@ const Card = ({
   url,
   image,
   source,
-  description_en
+  description_en,
+  baseline,
+  publi
 }) => {
   const manetInstance = 'http://manet.medialab.sciences-po.fr/?';
   const captureParams = {
-    url:url,
+    url:(url ? url : source),
     delay:5000,
     format:'jpeg',
     width:300,
@@ -22,11 +24,19 @@ const Card = ({
 
   return (
     <div className="card">
-      <h2>{name}</h2>
-      <img src={ image ? image : capture }/>
-      {source ? <a target="_blank" href={source}>source</a> : ''}
-      {url ? <a target="_blank" href={url}>try it !</a> : ''}
-      <p>{description_en}</p>
+      <h3>{name}</h3>
+      <p>{baseline}</p>
+
+      <figure>
+        <img src={ image ? image : capture }/>
+      </figure>
+
+
+      <p className="actions">
+        {url ? <a target="_blank" href={url}>try it !</a> : ''}
+        {source ? <a target="_blank" href={source}>source</a> : ''}
+        {publi ? <a target="_blank" href={publi}>publication</a> : ''}
+      </p>
 
     </div>
   )

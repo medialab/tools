@@ -14,7 +14,7 @@ body{
 }
 
 #main-container{
- flex : 2;
+ flex : 5;
 }
 
 #aside-container,
@@ -24,13 +24,32 @@ body{
 
 #cards-list {
 
-  .card {
-    width: 300px;
+  display: flex;
+  flex-flow: row wrap;
 
-    img {
-      max-width: 100%;
-      height: auto;
+  .card {
+    width: 250px;
+    padding: $large-gutter;
+
+    h3 {
+      text-align: center;
     }
+
+    figure {
+
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+    }
+
+    .actions {
+
+      a {
+        text-decoration: none;
+      }
+    }
+
 
   }
 }
