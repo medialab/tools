@@ -8,17 +8,17 @@ const Card = ({
   source,
   description_en,
   baseline,
-  publi
+  publi,
+  authors
 }) => {
   const manetInstance = 'http://manet.medialab.sciences-po.fr/?';
   const captureParams = {
     url:(url ? url : source),
-    delay:5000,
+    delay:1000,
     format:'jpeg',
-    width:250,
-    height:200,
-    zoom:0.5,
-    clipRect:'0,0,250,200'
+    width:(1024/2),
+    height:(768/2),
+    zoom:0.5
   };
   const capture = manetInstance + params.encode(captureParams);
   const fig = image ? image : capture;
@@ -41,6 +41,8 @@ const Card = ({
         {source ? <a target="_blank" href={source}>source</a> : ''}
         {publi ? <a target="_blank" href={publi}>publication</a> : ''}
       </p>
+
+      {/*authors.map((author, index) => ( <span key={index}> {author} </span> ))*/}
 
     </div>
   )
