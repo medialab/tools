@@ -7,7 +7,9 @@ const parseFilterOptions = (filterExpression) => {
     value = value === '1' ? false : value === '0' ? true : value;
     return {
       value,
-      label: values[1]
+      labels: {
+        en: values[1]
+      }
     }
   });
 };
@@ -18,11 +20,15 @@ export default function analyseData(spreadsheets) {
   const inputFilters = spreadsheets.filters.elements;
 
   const filters = inputFilters.map(inputFilter => {
-    const optionsEn = parseFilterOptions(inputFilter.options_en);
-    const optionsFr = parseFilterOptions(inputFilter.options_fr);
+    const inputOptions = parseFilterOptions(inputFilter.options_en);
+    const optionsFr = inputFilter.options_fr.split(';').map(val => val.split('|').pop());
+    const options = inputOptions.map((inputOption, index) => {
+      const option = Object.assign({}, inputOption);
+      option.labels.fr = optionsFr[index];
+      return option;
+    });
     const filter = {
-      optionsEn,
-      optionsFr,
+      options,
       key: inputFilter.key,
       acceptedValues: []
     };
@@ -39,6 +45,7 @@ export default function analyseData(spreadsheets) {
             [transform.key]: obj[transform.key].split(transform.separator).map(val => val.trim())
           };
           return obj2;
+
         case 'highlight':
           const highlighted = obj[transform.key] === '1';
           return {
@@ -55,7 +62,7 @@ export default function analyseData(spreadsheets) {
   const finalObjects = filters.reduce((objects, filter) => {
     return objects.map(obj => {
       // if filter is a boolean normalize to a boolean
-      if (filter.optionsEn[0].value === false || filter.optionsEn[0].value === true) {
+      if (filter.options[0].value === false || filter.options[0].value === true) {
         return {
           ...obj,
           [filter.key]: obj[filter.key] === '1'
@@ -69,6 +76,31 @@ export default function analyseData(spreadsheets) {
     filters
   }
 }
+
+export const initFilters = (filters, allTools) => {
+  return filters.map(filter => {
+    filter.acceptedValues = allTools.reduce((values, obj) => {
+      if (values.indexOf(obj[filter.key]) === -1) {
+        return [...values, obj[filter.key]];
+      }
+      return values;
+    }, []);
+
+    filter.options = filter.options.map(option => {
+      let count = 0;
+      allTools.forEach(tool => {
+        if (tool[filter.key] === option.value) {
+          count++;
+        }
+      });
+      return {
+        ...option,
+        count
+      }
+    })
+    return filter;
+  });
+};
 
 export const consumeFilters = (allTools, activeFilters) => {
   return activeFilters.reduce((finalData, thatFilter) => {

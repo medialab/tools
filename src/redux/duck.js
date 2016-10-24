@@ -4,7 +4,8 @@ import {createStructuredSelector} from 'reselect';
 import {default as gFetchData} from '../lib/fetchData';
 import {
   default as analyzeData,
-  consumeFilters
+  consumeFilters,
+  initFilters
 } from '../lib/analyzeData';
 
 /*
@@ -96,20 +97,12 @@ function data(state = DATA_DEFAULT_STATE, action) {
       };
     case FETCH_DATA + '_SUCCESS':
       const {allTools, filters: filtersInit} = analyzeData(action.result);
-      const filledFilters = filtersInit.map(filter => {
-        filter.acceptedValues = allTools.reduce((values, obj) => {
-          if (values.indexOf(obj[filter.key]) === -1) {
-            return [...values, obj[filter.key]];
-          }
-          return values;
-        }, []);
-        return filter;
-      });
+      const filledFilters = initFilters(filtersInit, allTools);
       return {
         ...state,
         allTools: allTools.slice(),
         filteredTools: allTools.slice(),
-        filters: filtersInit
+        filters: filledFilters
       };
     default:
       return state;
