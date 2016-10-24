@@ -4,7 +4,7 @@ const parseFilterOptions = (filterExpression) => {
   return filterExpression.split(';').map(option => {
     const values = option.split('|');
     let value = values[0];
-    value = value === '0' ? false : value === '1' ? true : value;
+    value = value === '1' ? false : value === '0' ? true : value;
     return {
       value,
       label: values[1]
@@ -23,7 +23,8 @@ export default function analyseData(spreadsheets) {
     const filter = {
       optionsEn,
       optionsFr,
-      key: inputFilter.key
+      key: inputFilter.key,
+      acceptedValues: []
     };
     return filter;
   });
@@ -45,7 +46,7 @@ export default function analyseData(spreadsheets) {
               highlighted
             };
         default:
-          return obj;
+          return obj === '' ? undefined: obj;
       }
     });
     return newObjects;
@@ -57,15 +58,27 @@ export default function analyseData(spreadsheets) {
       if (filter.optionsEn[0].value === false || filter.optionsEn[0].value === true) {
         return {
           ...obj,
-          [filter.key]: obj[filter.key] === '1' ? true: false
+          [filter.key]: obj[filter.key] === '1'
         }
       }
       return obj;
     });
   }, filteredObjects);
-
   return {
-    finalObjects,
+    allTools: finalObjects,
     filters
   }
 }
+
+export const consumeFilters = (allTools, activeFilters) => {
+  return activeFilters.reduce((finalData, thatFilter) => {
+    if (thatFilter.acceptedValues && thatFilter.acceptedValues.length) {
+      return finalData.filter(point => {
+        return thatFilter.acceptedValues.indexOf(point[thatFilter.key]) > -1;
+      });
+    }
+    return finalData;
+  }, allTools);
+};
+
+
