@@ -10,13 +10,17 @@ const Layout = ({
   allTools = [],
   filters = [],
   isDataLoaded = false,
+  freeTextFilter = '',
   actions: {
-    setCategoryFilter
+    setCategoryFilter,
+    setFreeTextFilter
   }
 }) => (
   <div id="layout-wrapper">
     <aside id="aside-container">
       <h2>Medialab tools</h2>
+
+      <input placeholder="Search a project" value={freeTextFilter} onChange={(evt) => setFreeTextFilter(evt.target.value)}/>
 
       <p>{filteredTools.length} / {allTools.length}</p>
       {filters.map((filter, key) => (

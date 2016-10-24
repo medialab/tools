@@ -1,4 +1,4 @@
-
+import fuzzy from 'fuzzy';
 
 const parseFilterOptions = (filterExpression) => {
   return filterExpression.split(';').map(option => {
@@ -112,5 +112,16 @@ export const consumeFilters = (allTools, activeFilters) => {
     return finalData;
   }, allTools);
 };
+
+const fuzzyOptions = { 
+  pre: '<', 
+  post: '>',
+  extract: el => Object.keys(el).reduce((str, key) => str + el[key], '')
+}
+
+export const consumeFreeTextFilter = (allTools, searchStr) => {
+  const filtered = fuzzy.filter(searchStr, allTools,  fuzzyOptions);
+  return filtered.filter(tool => tool.score > 20).map(tool => tool.original);
+}
 
 

@@ -5,6 +5,7 @@ import {default as gFetchData} from '../lib/fetchData';
 import {
   default as analyzeData,
   consumeFilters,
+  consumeFreeTextFilter,
   initFilters
 } from '../lib/analyzeData';
 
@@ -75,11 +76,22 @@ const DATA_DEFAULT_STATE = {
   filteredTools: [],
   filtersModels: [],
   filters: [],
-  dataLoaded: false
+  dataLoaded: false,
+  freeTextFilter: ''
 }
 
 function data(state = DATA_DEFAULT_STATE, action) {
   switch (action.type) {
+
+    case SET_FREE_TEXT_FILTER:
+      const searchStr = action.payload;
+      const filtered = consumeFilters(state.allTools, state.filters);
+      const searched = searchStr.length < 3 ? filtered : consumeFreeTextFilter(filtered, searchStr);
+      return {
+        ...state,
+        freeTextFilter: searchStr,
+        filteredTools: searched
+      };
 
     case SET_CATEGORY_FILTER:
       const filters = state.filters.map(filter => {
@@ -128,11 +140,13 @@ export default combineReducers({
 const allTools = state => state.data.allTools || [];
 const filteredTools = state => state.data.filteredTools || [];
 const filters = state => state.data.filters || [];
+const freeTextFilter = state => state.data.freeTextFilter || '';
 const isDataLoaded = state => state.data.dataLoaded || false;
 
 export const selector = createStructuredSelector({
   allTools,
   filteredTools,
   isDataLoaded,
+  freeTextFilter,
   filters
 });
