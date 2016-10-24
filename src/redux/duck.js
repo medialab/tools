@@ -2,6 +2,7 @@ import {combineReducers} from 'redux';
 import {createStructuredSelector} from 'reselect';
 
 import {default as gFetchData} from '../lib/fetchData';
+import {default as analyzeData} from '../lib/analyzeData';
 
 /*
  * Action names
@@ -17,7 +18,6 @@ const FETCH_DATA = 'FETCH_DATA';
   promise: (dispatch, getState) => {
     return new Promise((resolve, reject) => {
       gFetchData('1oodGx-QVRW8aiKJVPZGLg4o0oOY1lsmsZSj3mlz9xSM', (sheets) => {
-        console.log(sheets);
         return resolve(sheets);
       });
     });
@@ -44,9 +44,11 @@ const DATA_DEFAULT_STATE = {
 function data(state = DATA_DEFAULT_STATE, action) {
   switch (action.type) {
     case FETCH_DATA + '_SUCCESS':
+      const {finalObjects: allTools, filters} = analyzeData(action.result);
       return {
         ...state,
-        allTools: action.result.tools.elements
+        allTools: action.result.tools.elements,
+        filters
       };
     default:
       return state;
