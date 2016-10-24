@@ -5,9 +5,10 @@ import CardsList from './components/CardsList';
 import './Layout.scss';
 
 const Layout = ({
-  filteredTools=[],
-  allTools=[],
+  filteredTools = [],
+  allTools = [],
   filters = [],
+  isDataLoaded = false,
   actions: {
     setCategoryFilter
   }
@@ -56,7 +57,7 @@ const Layout = ({
       })}
     </aside>
     <section id="main-container">
-      <CardsList cards={filteredTools} />
+      <CardsList loading={!isDataLoaded} cards={filteredTools} />
     </section>
   </div>
 );

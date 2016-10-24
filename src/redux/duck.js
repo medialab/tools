@@ -74,7 +74,8 @@ const DATA_DEFAULT_STATE = {
   allTools: [],
   filteredTools: [],
   filtersModels: [],
-  filters: []
+  filters: [],
+  dataLoaded: false
 }
 
 function data(state = DATA_DEFAULT_STATE, action) {
@@ -100,9 +101,15 @@ function data(state = DATA_DEFAULT_STATE, action) {
       const filledFilters = initFilters(filtersInit, allTools);
       return {
         ...state,
+        dataLoaded: true,
         allTools: allTools.slice(),
         filteredTools: allTools.slice(),
         filters: filledFilters
+      };
+    case FETCH_DATA + '_FAILURE':
+      return {
+        ...state,
+        dataLoaded: true
       };
     default:
       return state;
@@ -121,9 +128,11 @@ export default combineReducers({
 const allTools = state => state.data.allTools || [];
 const filteredTools = state => state.data.filteredTools || [];
 const filters = state => state.data.filters || [];
+const isDataLoaded = state => state.data.dataLoaded || false;
 
 export const selector = createStructuredSelector({
   allTools,
   filteredTools,
+  isDataLoaded,
   filters
 });

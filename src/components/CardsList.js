@@ -2,14 +2,17 @@ import React from 'react';
 import Card from './Card';
 
 const CardsList = ({
-  cards=[]
+  cards=[],
+  loading
 }) => (
   <section id='cards-list'>
     {cards.length > 0 ?
       cards.map((card, index) => (
         <Card key={index} {...card} />
       )) :
-      'Loading'
+      loading ?
+      'Loading' :
+      'No item to display'
     }
   </section>
 );
