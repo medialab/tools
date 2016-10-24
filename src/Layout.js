@@ -18,7 +18,8 @@ const Layout = ({
 }) => (
   <div id="layout-wrapper">
     <aside id="aside-container">
-      <h2>Medialab tools</h2>
+      <img src="http://www.medialab.sciences-po.fr/wp-content/uploads/2016/04/logo.png" />
+      <h2>Tools we develop, and tools we use</h2>
 
       <input placeholder="Search a project" value={freeTextFilter} onChange={(evt) => setFreeTextFilter(evt.target.value)}/>
 
@@ -27,6 +28,7 @@ const Layout = ({
           <FilterGroup setCategoryFilter={setCategoryFilter} filter={filter} key={key} />
         )
       )}
+
     </aside>
     <section id="main-container">
       <CardsList loading={!isDataLoaded} cards={filteredTools} />

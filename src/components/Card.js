@@ -15,22 +15,26 @@ const Card = ({
     url:(url ? url : source),
     delay:5000,
     format:'jpeg',
-    width:300,
-    height:170,
-    zoom:0.25,
-    clipRect:'0,0,300,170'
+    width:250,
+    height:200,
+    zoom:0.5,
+    clipRect:'0,0,250,200'
   };
   const capture = manetInstance + params.encode(captureParams);
+  const fig = image ? image : capture;
+  const style = {backgroundImage: 'url(' + fig + ')'};
 
   return (
     <div className="card">
+
+      <a className="figure"
+         style={style}
+         target="_blank"
+         href={url ? url : source}>
+      </a>
+
       <h3>{name}</h3>
-      <p>{baseline}</p>
-
-      <figure>
-        <img src={ image ? image : capture }/>
-      </figure>
-
+      <p className="baseline">{baseline}</p>
 
       <p className="actions">
         {url ? <a target="_blank" href={url}>try it !</a> : ''}
