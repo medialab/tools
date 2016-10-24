@@ -11,8 +11,13 @@ const Layout = ({
     sayCoucou
   }
 }) => (
-  <div>
-    <CardsList cards={allTools} />
+  <div id="layout-wrapper">
+    <aside id="aside-container">
+      <h2>Medialab tools</h2>
+    </aside>
+    <section id="main-container">
+      <CardsList cards={allTools} />
+    </section>
   </div>
 )
 

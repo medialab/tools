@@ -3,3 +3,36 @@
 body{
   font-family: $main-font-stack;
 }
+
+#layout-wrapper{
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+#aside-container{
+  flex : 1;
+}
+
+#main-container{
+ flex : 2;
+}
+
+#aside-container,
+#main-container{
+  padding: $large-gutter;
+}
+
+@media screen and (max-width: 1000px)
+{
+  #layout-wrapper{
+    flex-flow: column nowrap;
+  }
+
+  #aside-container{
+    flex : 1;
+  }
+
+  #main-container{
+   flex : 1;
+  }
+}
