@@ -86,7 +86,7 @@ function data(state = DATA_DEFAULT_STATE, action) {
     case SET_FREE_TEXT_FILTER:
       const searchStr = action.payload;
       const filtered = consumeFilters(state.allTools, state.filters);
-      const searched = searchStr.length < 3 ? filtered : consumeFreeTextFilter(filtered, searchStr);
+      const searched = searchStr.length < 2 ? filtered : consumeFreeTextFilter(filtered, searchStr);
       return {
         ...state,
         freeTextFilter: searchStr,
