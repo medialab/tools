@@ -21,6 +21,7 @@
   "dependencies": {
     "kotatsu": "^0.14.0",
     "lodash": "^4.16.4",
+    "query-params": "0.0.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-redux": "^4.4.5",
