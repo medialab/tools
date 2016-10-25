@@ -15,6 +15,18 @@ a {
 
 #aside-container{
   flex : 1;
+
+  input[type="text"] {
+    outline: none;
+    width: 100%;
+    font-size: 1.3rem;
+    border: none;
+  }
+
+  input[type="text"]:focus
+  {
+    border: 1px solid lightgrey;
+  }
 }
 
 #main-container{
@@ -34,7 +46,14 @@ a {
   .card {
     flex: 1;
     min-width: 20%;
+    max-width: 21%;
     padding: $large-gutter;
+
+    @media screen and (max-width: 1000px)
+    {
+      min-width: 100%;
+      max-width: unset;
+    }
 
     .by {
       font-size: 9px;

@@ -1,5 +1,7 @@
 import React from 'react';
 
+import './FilterGroup.scss';
+
 const FilterGroup = ({
   filter,
   setCategoryFilter
@@ -22,7 +24,7 @@ const FilterGroup = ({
   };
 
   return (<div className="category-filter-container">
-    <form style={{marginTop: '1rem'}} className="filterGroup">
+    <form  className="filterGroup">
       {filter.options.map((option, key) => (
         <div key={key}> 
           <input 
