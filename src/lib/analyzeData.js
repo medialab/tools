@@ -3,6 +3,10 @@ import fuzzy from 'fuzzy';
 const parseFilterOptions = (filterExpression) => {
   return filterExpression.split(';').map(option => {
     const values = option.split('|');
+    if (values.length < 2) {
+      console.error('you must separate filtered values with their label with a "|". Not done for %s', JSON.stringify(option, null, 2));
+      return undefined;
+    }
     let value = values[0];
     value = value === '1' ? false : value === '0' ? true : value;
     return {
@@ -14,17 +18,54 @@ const parseFilterOptions = (filterExpression) => {
   });
 };
 
-export default function analyseData(spreadsheets) {
+export default function analyzeData(spreadsheets = {}) {
+  const requiredTabs = ['tools', 'transforms', 'filters'];
+  const invalidTabs = requiredTabs.some(tabName => {
+    if (spreadsheets[tabName] === undefined) {
+      console.error('you must provide a tab named "%s" to the google spreadsheet', tabName);
+      return true;
+    }
+  });
+  if (invalidTabs) {
+    return undefined;
+  }
   const inputObjects = spreadsheets.tools.elements;
   const transforms = spreadsheets.transforms.elements;
   const inputFilters = spreadsheets.filters.elements;
 
+  let invalidFilters = false;
+
+  const requiredFiltersFields = ['key', 'options_fr', 'options_en'];
+
   const filters = inputFilters.map(inputFilter => {
+    // check fields
+    const missesFields = requiredFiltersFields.find(field => {
+      if (inputFilter[field] === undefined) {
+        console.error('you must provide a "%s" column to the filters tab of your data spreadsheet', field);
+        invalidFilters = true;
+        return true;
+      }
+    });
+    if (missesFields) {
+      invalidFilters = true;
+      return undefined;
+    }
+    // check key is not empty
+    if (inputFilter.key.trim().length === 0) {
+      console.error('"key" column must be filled in your data spreadsheet');
+      invalidFilters = true;
+      return undefined;
+    }
     const inputOptions = parseFilterOptions(inputFilter.options_en);
+    if (inputOptions.indexOf(undefined) > -1) {
+      invalidFilters = true;
+      return undefined;
+    }
     const optionsFr = inputFilter.options_fr.split(';').map(val => val.split('|').pop());
-    const options = inputOptions.map((inputOption, index) => {
+    const options = inputOptions.filter(option => option !== undefined).map((inputOption, index) => {
       const option = Object.assign({}, inputOption);
-      option.labels.fr = optionsFr[index];
+      // fill default with en version
+      option.labels.fr = optionsFr.length >= index - 1 ? optionsFr[index] : option.labels.en;
       return option;
     });
     const filter = {
@@ -34,6 +75,10 @@ export default function analyseData(spreadsheets) {
     };
     return filter;
   });
+
+  if (invalidFilters === true) {
+    return undefined;
+  }
 
   // apply transformations to special fields
   const filteredObjects = transforms.reduce((objects, transform) => {
@@ -74,8 +119,8 @@ export default function analyseData(spreadsheets) {
   return {
     allTools: finalObjects,
     filters
-  }
-}
+  };
+};
 
 export const initFilters = (filters, allTools) => {
   return filters.map(filter => {
@@ -117,19 +162,19 @@ const fuzzyOptions = {
   pre: '<', 
   post: '>',
   extract: el => Object.keys(el).reduce((str, key) => str + el[key], '')
-}
+};
 
 export const consumeFreeTextFilter = (allTools, searchStr) => {
   const filtered = fuzzy.filter(searchStr, allTools,  fuzzyOptions);
   return filtered
           .filter(tool => tool.score > 5)
-          .sort((a, b) =>{
+          .sort((a, b) => {
             if (a.score < b.score) {
               return 1;
             }
             return -1;
-          } )
+          })
           .map(tool => tool.original);
-}
+};
 
 
