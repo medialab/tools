@@ -26,22 +26,30 @@ const Card = ({
   const style = {backgroundImage: 'url(' + fig + ')'};
 
   return (
-    <div className="card">
+    <div 
+      className="card"
+      itemScope
+      itemType="http://schema.org/SoftwareApplication"
+      typeof="SoftwareApplication"
+      resource={'#' + name.replace(' ', '_')}
+      id={'#' + name.replace(' ', '_')}
+    >
 
       <a className="figure"
+         itemProp="image"
          style={style}
          target="_blank"
          href={url ? url : source}>
       </a>
 
 
-      <h3>{name}</h3>
-      <p className="baseline">{baseline}</p>
+      <h3 itemProp="name">{name}</h3>
+      <p itemProp="description" className="baseline">{baseline}</p>
 
       <p className="actions">
-        {url ? <a target="_blank" href={url}>try it !</a> : ''}
-        {source ? <a target="_blank" href={source}>source</a> : ''}
-        {publi ? <a target="_blank" href={publi}>publication</a> : ''}
+        {url ? <a  itemProp="url" target="_blank" href={url}>try it !</a> : ''}
+        {source ? <a itemProp="downloadUrl" target="_blank" href={source}>source</a> : ''}
+        {publi ? <a itemProp="citation" target="_blank" href={publi}>publication</a> : ''}
       </p>
 
       <p className="by">
