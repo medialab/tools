@@ -7214,7 +7214,7 @@
 	    case SET_FREE_TEXT_FILTER:
 	      var searchStr = action.payload;
 	      var filtered = (0, _analyzeData2.consumeFilters)(state.allTools, state.filters);
-	      var searched = searchStr.length < 2 ? filtered : (0, _analyzeData2.consumeFreeTextFilter)(filtered, searchStr);
+	      var searched = searchStr.length < 1 ? filtered : (0, _analyzeData2.consumeFreeTextFilter)(filtered, searchStr);
 	      return _extends({}, state, {
 	        freeTextFilter: searchStr,
 	        filteredTools: searched
@@ -12131,19 +12131,27 @@
 	
 	  return _react2.default.createElement(
 	    'div',
-	    { className: 'card' },
+	    {
+	      className: 'card',
+	      itemScope: true,
+	      itemType: 'http://schema.org/SoftwareApplication',
+	      'typeof': 'SoftwareApplication',
+	      resource: '#' + name.replace(' ', '_'),
+	      id: '#' + name.replace(' ', '_')
+	    },
 	    _react2.default.createElement('a', { className: 'figure',
+	      itemProp: 'image',
 	      style: style,
 	      target: '_blank',
 	      href: url ? url : source }),
 	    _react2.default.createElement(
 	      'h3',
-	      null,
+	      { itemProp: 'name' },
 	      name
 	    ),
 	    _react2.default.createElement(
 	      'p',
-	      { className: 'baseline' },
+	      { itemProp: 'description', className: 'baseline' },
 	      baseline
 	    ),
 	    _react2.default.createElement(
@@ -12151,17 +12159,17 @@
 	      { className: 'actions' },
 	      url ? _react2.default.createElement(
 	        'a',
-	        { target: '_blank', href: url },
+	        { itemProp: 'url', target: '_blank', href: url },
 	        'try it !'
 	      ) : '',
 	      source ? _react2.default.createElement(
 	        'a',
-	        { target: '_blank', href: source },
+	        { itemProp: 'downloadUrl', target: '_blank', href: source },
 	        'source'
 	      ) : '',
 	      publi ? _react2.default.createElement(
 	        'a',
-	        { target: '_blank', href: publi },
+	        { itemProp: 'citation', target: '_blank', href: publi },
 	        'publication'
 	      ) : ''
 	    ),
@@ -12260,6 +12268,11 @@
 	    _react2.default.createElement(
 	      'form',
 	      { className: 'filterGroup' },
+	      _react2.default.createElement(
+	        'h3',
+	        null,
+	        filter.title
+	      ),
 	      filter.options.map(function (option, key) {
 	        return _react2.default.createElement(
 	          'div',
@@ -12300,6 +12313,8 @@
 	});
 	exports.consumeFreeTextFilter = exports.consumeFilters = exports.initFilters = undefined;
 	
+	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+	
 	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 	
 	exports.default = analyzeData;
@@ -12309,8 +12324,6 @@
 	var _fuzzy2 = _interopRequireDefault(_fuzzy);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-	
-	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 	
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 	
@@ -12349,9 +12362,31 @@
 	  var transforms = spreadsheets.transforms.elements;
 	  var inputFilters = spreadsheets.filters.elements;
 	
+	  // apply transformations to special fields
+	  var transformedObjects = transforms.reduce(function (objects, transform) {
+	    return objects.map(function (obj) {
+	      switch (transform.type) {
+	        case 'list':
+	          return _extends({}, obj, _defineProperty({}, transform.key, obj[transform.key].split(transform.separator).map(function (val) {
+	            return val.trim();
+	          })));
+	          return obj2;
+	
+	        case 'highlight':
+	          var highlighted = obj[transform.key] === '1';
+	          return _extends({}, obj, {
+	            highlighted: highlighted
+	          });
+	        default:
+	          return obj === '' ? undefined : obj;
+	      }
+	    });
+	    return newObjects;
+	  }, inputObjects);
+	
 	  var invalidFilters = false;
 	
-	  var requiredFiltersFields = ['key', 'options_fr', 'options_en'];
+	  var requiredFiltersFields = ['key', 'options_mode', 'options_fr', 'options_en', 'title'];
 	
 	  var filters = inputFilters.map(function (inputFilter) {
 	    // check fields
@@ -12372,24 +12407,72 @@
 	      invalidFilters = true;
 	      return undefined;
 	    }
-	    var inputOptions = parseFilterOptions(inputFilter.options_en);
-	    if (inputOptions.indexOf(undefined) > -1) {
-	      invalidFilters = true;
-	      return undefined;
+	
+	    var options = void 0;
+	    var mode = void 0;
+	    if (inputFilter.options_mode === 'fixed') {
+	      var _ret = function () {
+	        mode = 'fixed';
+	        var inputOptions = parseFilterOptions(inputFilter.options_en);
+	        if (inputOptions.indexOf(undefined) > -1) {
+	          invalidFilters = true;
+	          return {
+	            v: undefined
+	          };
+	        }
+	        var optionsFr = inputFilter.options_fr.split(';').map(function (val) {
+	          return val.split('|').pop();
+	        });
+	        options = inputOptions.filter(function (option) {
+	          return option !== undefined;
+	        }).map(function (inputOption, index) {
+	          var option = Object.assign({}, inputOption);
+	          // fill default with en version
+	          option.labels.fr = optionsFr.length >= index - 1 ? optionsFr[index] : option.labels.en;
+	          return option;
+	        });
+	      }();
+	
+	      if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
 	    }
-	    var optionsFr = inputFilter.options_fr.split(';').map(function (val) {
-	      return val.split('|').pop();
-	    });
-	    var options = inputOptions.filter(function (option) {
-	      return option !== undefined;
-	    }).map(function (inputOption, index) {
-	      var option = Object.assign({}, inputOption);
-	      // fill default with en version
-	      option.labels.fr = optionsFr.length >= index - 1 ? optionsFr[index] : option.labels.en;
-	      return option;
-	    });
+	    // open options
+	    else {
+	        var uniques = transformedObjects.reduce(function (un, object) {
+	          var prop = object[inputFilter.key];
+	          if (Array.isArray(prop)) {
+	            prop.forEach(function (value) {
+	              if (value) {
+	                un[value] = un[value] === undefined ? 1 : un[value] + 1;
+	              }
+	            });
+	          }
+	          // simple value
+	          else {
+	              un[prop] = un[prop] === undefined ? 1 : un[prop] + 1;
+	            }
+	          return un;
+	        }, {});
+	        // populate options with the different possible keys
+	        options = Object.keys(uniques).map(function (key) {
+	          return {
+	            value: key,
+	            labels: {
+	              fr: key,
+	              en: key
+	            }
+	          };
+	        }).sort(function (a, b) {
+	          if (a.value > b.value) {
+	            return 1;
+	          }
+	          return -1;
+	        });
+	        mode = 'open';
+	      }
 	    var filter = {
 	      options: options,
+	      title: inputFilter.title,
+	      mode: mode,
 	      key: inputFilter.key,
 	      acceptedValues: []
 	    };
@@ -12400,57 +12483,45 @@
 	    return undefined;
 	  }
 	
-	  // apply transformations to special fields
-	  var filteredObjects = transforms.reduce(function (objects, transform) {
-	    return objects.map(function (obj) {
-	      switch (transform.type) {
-	        case 'list':
-	          return _extends({}, obj, _defineProperty({}, transform.key, obj[transform.key].split(transform.separator).map(function (val) {
-	            return val.trim();
-	          })));
-	          return obj2;
-	
-	        case 'highlight':
-	          var highlighted = obj[transform.key] === '1';
-	          return _extends({}, obj, {
-	            highlighted: highlighted
-	          });
-	        default:
-	          return obj === '' ? undefined : obj;
-	      }
-	    });
-	    return newObjects;
-	  }, inputObjects);
 	  // normalize data against filters
 	  var finalObjects = filters.reduce(function (objects, filter) {
 	    return objects.map(function (obj) {
 	      // if filter is a boolean normalize to a boolean
-	      if (filter.options[0].value === false || filter.options[0].value === true) {
+	      if (filter.mode === 'fixed' && filter.options[0].value === false || filter.options[0].value === true) {
 	        return _extends({}, obj, _defineProperty({}, filter.key, obj[filter.key] === '1'));
 	      }
 	      return obj;
 	    });
-	  }, filteredObjects);
+	  }, transformedObjects);
+	
+	  // return processed data
 	  return {
 	    allTools: finalObjects,
 	    filters: filters
 	  };
 	};
-	
 	var initFilters = exports.initFilters = function initFilters(filters, allTools) {
 	  return filters.map(function (filter) {
-	    filter.acceptedValues = allTools.reduce(function (values, obj) {
-	      if (values.indexOf(obj[filter.key]) === -1) {
-	        return [].concat(_toConsumableArray(values), [obj[filter.key]]);
-	      }
-	      return values;
-	    }, []);
+	    // pre-tick only filters which are 'fixed'
+	    if (filter.mode === 'fixed') {
+	      filter.acceptedValues = filter.options.map(function (option) {
+	        return option.value;
+	      });
+	    }
 	
 	    filter.options = filter.options.map(function (option) {
 	      var count = 0;
 	      allTools.forEach(function (tool) {
-	        if (tool[filter.key] === option.value) {
-	          count++;
+	        if (Array.isArray(tool[filter.key]) === false) {
+	          if (tool[filter.key] === option.value) {
+	            count++;
+	          }
+	        } else {
+	          tool[filter.key].forEach(function (val) {
+	            if (val === option.value) {
+	              count++;
+	            }
+	          });
 	        }
 	      });
 	      return _extends({}, option, {
@@ -12463,9 +12534,22 @@
 	
 	var consumeFilters = exports.consumeFilters = function consumeFilters(allTools, activeFilters) {
 	  return activeFilters.reduce(function (finalData, thatFilter) {
-	    if (thatFilter.acceptedValues) {
+	    // filter if the filter is closed or (in case of an open-values filters like tags) if at least one value is ticked
+	    if (thatFilter.options_mode === 'fixed' || thatFilter.acceptedValues.length > 0) {
 	      return finalData.filter(function (point) {
-	        return thatFilter.acceptedValues.indexOf(point[thatFilter.key]) > -1;
+	        if (Array.isArray(point[thatFilter.key])) {
+	          // does the point matches all the filters
+	          var hasAll = true;
+	          thatFilter.acceptedValues.forEach(function (val) {
+	            if (point[thatFilter.key].indexOf(val) === -1) {
+	              hasAll = false;
+	            }
+	          });
+	          console.log(thatFilter.acceptedValues, point[thatFilter.key], 'hasAll', hasAll);
+	          return hasAll;
+	        } else {
+	          return thatFilter.acceptedValues.indexOf(point[thatFilter.key]) > -1;
+	        }
 	      });
 	    }
 	    return finalData;
@@ -12485,7 +12569,7 @@
 	var consumeFreeTextFilter = exports.consumeFreeTextFilter = function consumeFreeTextFilter(allTools, searchStr) {
 	  var filtered = _fuzzy2.default.filter(searchStr, allTools, fuzzyOptions);
 	  return filtered.filter(function (tool) {
-	    return tool.score > 5;
+	    return tool.score > 15;
 	  }).sort(function (a, b) {
 	    if (a.score < b.score) {
 	      return 1;
@@ -12715,7 +12799,7 @@
 	
 	
 	// module
-	exports.push([module.id, ".category-filter-container {\n  margin-top: 1rem; }\n  .category-filter-container label {\n    padding-left: .5rem; }\n", ""]);
+	exports.push([module.id, ".category-filter-container {\n  margin-bottom: 1.5rem; }\n  .category-filter-container h3 {\n    margin-bottom: .5rem; }\n  .category-filter-container label {\n    padding-left: .5rem; }\n", ""]);
 	
 	// exports
 

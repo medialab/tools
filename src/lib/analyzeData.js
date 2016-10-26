@@ -167,7 +167,6 @@ export default function analyzeData(spreadsheets = {}) {
 export const initFilters = (filters, allTools) => {
   return filters.map(filter => {
     // pre-tick only filters which are 'fixed'
-    console.log('initing ', filter);
     if (filter.mode === 'fixed') {
       filter.acceptedValues = filter.options.map(option => option.value);
     }
