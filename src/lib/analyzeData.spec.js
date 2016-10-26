@@ -38,18 +38,24 @@ describe('lib:analyzeData', () => {
       const validFilters = [
         {
           key: 'mykey',
+          title: 'coucou',
+          options_mode: 'fixed',
           options_fr: '0|from us;1|from friends',
           options_en: '0|de nous;1|des autres'
         },
         // options_fr empty
         {
           key: 'mykey',
+          title: 'coucou',
+          options_mode: 'fixed',
           options_fr: '',
           options_en: '0|de nous;1|des autres'
         },
         // less items in fr than in en version
         {
           key: 'mykey',
+          title: 'coucou',
+          options_mode: 'fixed',
           options_fr: '0|from us;1|from friends',
           options_en: '0|de nous'
         }
@@ -68,23 +74,30 @@ describe('lib:analyzeData', () => {
       const invalidFilters = [
         // no key field
         {
+          title: 'coucou',
+          options_mode: 'fixed',
           options_fr: '0|from us;1|from friends',
           options_en: '0|de nous;1|des autres'
         },
         // empty key field
         {
+          title: 'coucou',
           key: '',
+          options_mode: 'fixed',
           options_fr: '0|from us;1|from friends',
           options_en: '0|de nous;1|des autres'
         },
         // empty options field
         {
+          title: 'coucou',
           options_fr: '0|from us;1|from friends',
           options_en: ''
         },
         // badly formatted values
         {
           key: 'mykey',
+          title: 'coucou',
+          options_mode: 'fixed',
           options_fr: '0lfrom us;1|from friends',
           options_en: '0|de nous;1des autres'
         }

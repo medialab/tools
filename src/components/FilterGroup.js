@@ -25,6 +25,7 @@ const FilterGroup = ({
 
   return (<div className="category-filter-container">
     <form  className="filterGroup">
+      <h3>{filter.title}</h3>
       {filter.options.map((option, key) => (
         <div key={key}> 
           <input 
