@@ -4,8 +4,10 @@
 {
     min-width: 40%;
     max-width: 41%;
-    margin-bottom: 50px;
+    min-height: 20rem;
     padding: $large-gutter;
+
+    text-align: center;
 
     flex: 1;
     @media screen and (max-width: 1000px)
@@ -27,17 +29,22 @@
     {
         margin: 0;
 
+        margin-bottom: .5rem;
+
         text-align: center;
     }
     .figure
     {
-        display: block;
+        display: inline-block;
         // background-color: $sp-red;
 
         height: 200px;
-        margin-bottom: $large-gutter * 2;
+        overflow: hidden;
+        width: 200px;
+        // margin-bottom: $large-gutter * 2;
+        margin-bottom: 0;
 
-        border-radius: 15px;
+        border-radius: 6px;
         background-repeat: no-repeat;
         background-position: center;
         background-size: cover;
@@ -51,6 +58,8 @@
         flex-flow: row wrap;
         justify-content: center;
         align-items: center;
+
+        margin: 0;
         a
         {
             margin-right: 8px;
@@ -71,7 +80,11 @@
     .baseline
     {
         margin: 0;
+        margin-bottom: .5rem;
 
         text-align: center;
+
+        font-style: italic;
+        font-size: .8rem;
     }
 }
