@@ -1,123 +1,72 @@
 @import './parameters.scss';
 
-body{
-  font-family: $main-font-stack;
+body
+{
+    font-family: $main-font-stack;
 }
 
-a {
-  color: $sp-red;
+a
+{
+    color: $sp-red;
 }
 
-#layout-wrapper{
-  display: flex;
-  flex-flow: row nowrap;
+#layout-wrapper
+{
+    display: flex;
+
+    flex-flow: row nowrap;
 }
 
-#aside-container{
+#aside-container
+{
+    flex: 1;
+    input[type='text']
+    {
+        font-size: 1.3rem;
 
-  flex : 1;
+        width: 100%;
 
-  input[type="text"] {
-    outline: none;
-    width: 100%;
-    font-size: 1.3rem;
-    border: none;
-  }
-
-  input[type="text"]:focus
-  {
-    border: 1px solid lightgrey;
-  }
+        border: none;
+        outline: none;
+    }
+    input[type='text']:focus
+    {
+        border: 1px solid lightgrey;
+    }
 }
 
-#main-container{
- flex : 5;
+#main-container
+{
+    flex: 5;
 }
 
 #aside-container,
-#main-container{
-  padding: $large-gutter;
+#main-container
+{
+    padding: $large-gutter;
 }
 
-#cards-list {
+#cards-list
+{
+    display: flex;
 
-  display: flex;
-  flex-flow: row wrap;
-
-  .card {
-    flex: 1;
-    min-width: 20%;
-    max-width: 21%;
-    padding: $large-gutter;
-
-    @media screen and (max-width: 1000px)
-    {
-      min-width: 100%;
-      max-width: unset;
-    }
-
-    .by {
-      font-size: 9px;
-      text-align: center;
-      color:grey;
-    }
-
-    h3 {
-      text-align: center;
-      margin:0;
-    }
-
-    margin-bottom: 50px;
-
-    .figure {
-      // background-color: $sp-red;
-      height: 200px;
-      background-repeat:no-repeat;
-      background-position:center;
-      background-size:cover;
-      border-radius:6px;
-      display: block;
-      margin-bottom:  $large-gutter * 2;
-
-    }
-
-    .actions {
-      text-align: center;
-
-      a {
-        text-decoration: none;
-        border: 2px solid $sp-red;
-        padding: 4px 8px 4px 8px;
-        margin-right: 8px;
-        background-color:white;
-
-        &:hover {
-          background-color:$sp-red;
-          color:white;
-        }
-      }
-    }
-
-    .baseline {
-      margin:0;
-      text-align: center;
-    }
-
-
-  }
+    flex-flow: row wrap;
 }
 
 @media screen and (max-width: 1000px)
 {
-  #layout-wrapper{
-    flex-flow: column nowrap;
-  }
+    #layout-wrapper
+    {
+        flex-flow: column nowrap;
+    }
 
-  #aside-container{
-    flex : 1;
-  }
+    #aside-container
+    {
+        flex: 1;
+    }
 
-  #main-container{
-   flex : 1;
-  }
+    #main-container
+    {
+        flex: 1;
+    }
 }

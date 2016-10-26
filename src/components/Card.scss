@@ -1,0 +1,75 @@
+@import '../parameters.scss';
+
+.card
+{
+    min-width: 20%;
+    max-width: 21%;
+    margin-bottom: 50px;
+    padding: $large-gutter;
+
+    flex: 1;
+    @media screen and (max-width: 1000px)
+    {
+        min-width: 100%;
+        max-width: unset;
+    }
+    .by
+    {
+        font-size: 9px;
+
+        text-align: center;
+
+        color: grey;
+    }
+    h3
+    {
+        margin: 0;
+
+        text-align: center;
+    }
+    .figure
+    {
+        display: block;
+        // background-color: $sp-red;
+
+        height: 200px;
+        margin-bottom: $large-gutter * 2;
+
+        border-radius: 15px;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: cover;
+    }
+    .actions
+    {
+        display: flex;
+
+        text-align: center;
+
+        flex-flow: row wrap;
+        justify-content: center;
+        align-items: center;
+        a
+        {
+            margin-right: 8px;
+            margin-bottom: 4px;
+            padding: 4px 8px 4px 8px;
+
+            text-decoration: none;
+
+            border: 2px solid $sp-red;
+            background-color: white;
+            &:hover
+            {
+                color: white;
+                background-color: $sp-red;
+            }
+        }
+    }
+    .baseline
+    {
+        margin: 0;
+
+        text-align: center;
+    }
+}

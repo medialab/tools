@@ -1,6 +1,8 @@
 import React from 'react';
 import params from 'query-params';
 
+import './Card.scss';
+
 const Card = ({
   name,
   url,
@@ -23,7 +25,10 @@ const Card = ({
   };
   const capture = manetInstance + params.encode(captureParams);
   const fig = image ? image : capture;
-  const style = {backgroundImage: 'url(' + fig + ')'};
+  const style = {
+    background: 'url(' + fig + ') no-repeat center center',
+    backgroundSize: '99%'
+  };
 
   return (
     <div 
