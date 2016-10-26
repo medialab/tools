@@ -167,7 +167,7 @@ const fuzzyOptions = {
 export const consumeFreeTextFilter = (allTools, searchStr) => {
   const filtered = fuzzy.filter(searchStr, allTools,  fuzzyOptions);
   return filtered
-          .filter(tool => tool.score > 5)
+          .filter(tool => tool.score > 15)
           .sort((a, b) => {
             if (a.score < b.score) {
               return 1;
