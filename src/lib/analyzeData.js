@@ -224,7 +224,10 @@ export const consumeFilters = (allTools, activeFilters) => {
 const fuzzyOptions = { 
   pre: '<', 
   post: '>',
-  extract: el => Object.keys(el).reduce((str, key) => str + el[key], '')
+  extract: el => Object.keys(el).reduce((str, key) => {
+    str = Array.isArray(el[key]) ? str + el[key].join(',') : str + el[key];
+    return str;
+  }, '')
 };
 
 export const consumeFreeTextFilter = (allTools, searchStr) => {
