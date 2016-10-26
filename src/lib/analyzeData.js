@@ -19,7 +19,7 @@ const parseFilterOptions = (filterExpression) => {
 };
 
 export default function analyzeData(spreadsheets = {}) {
-  const requiredTabs = ['tools', 'transforms', 'filters'];
+  const requiredTabs = ['tools', 'transforms', 'filters', 'grouping'];
   const invalidTabs = requiredTabs.some(tabName => {
     if (spreadsheets[tabName] === undefined) {
       console.error('you must provide a tab named "%s" to the google spreadsheet', tabName);
@@ -32,6 +32,7 @@ export default function analyzeData(spreadsheets = {}) {
   const inputObjects = spreadsheets.tools.elements;
   const transforms = spreadsheets.transforms.elements;
   const inputFilters = spreadsheets.filters.elements;
+  const inputGroups = spreadsheets.grouping.elements;
 
   // apply transformations to special fields
   const transformedObjects = transforms.reduce((objects, transform) => {
@@ -56,6 +57,18 @@ export default function analyzeData(spreadsheets = {}) {
     });
     return newObjects;
   }, inputObjects);
+
+  // parse groups
+  const inputGrouping = inputGroups[0];
+  const inputGroupsOptions = parseFilterOptions(inputGrouping.values_en);
+  const frLabels = inputGrouping.values_fr.split(';').map(val => val.split('|').pop());
+  const groups = inputGroupsOptions.filter(option => option !== undefined).map((inputOption, index) => {
+      const option = Object.assign({}, inputOption);
+      // fill default with en version
+      option.labels.fr = frLabels.length >= index - 1 ? frLabels[index] : option.labels.en;
+      option.key = inputGrouping.key;
+      return option;
+  });
 
   let invalidFilters = false;
 
@@ -145,7 +158,10 @@ export default function analyzeData(spreadsheets = {}) {
   }
 
   // normalize data against filters
-  const finalObjects = filters.reduce((objects, filter) => {
+  const normalizedObjects = filters.concat({
+    key: groups[0].key,
+    options: groups
+  }).reduce((objects, filter) => {
     return objects.map(obj => {
       // if filter is a boolean normalize to a boolean
       if (filter.mode === 'fixed' && filter.options[0].value === false || filter.options[0].value === true) {
@@ -158,9 +174,20 @@ export default function analyzeData(spreadsheets = {}) {
     });
   }, transformedObjects);
 
+  // attribute group to objects
+  const finalObjects = normalizedObjects.map(normalizedObject => {
+    const itsGroup = groups.find(thatGroup => thatGroup.value === normalizedObject[thatGroup.key]);
+    return {
+      ...normalizedObject,
+      group: itsGroup ? itsGroup.value : ''
+    };
+  });
+
+
   // return processed data
   return {
     allTools: finalObjects,
+    groups,
     filters
   };
 };
@@ -209,7 +236,6 @@ export const consumeFilters = (allTools, activeFilters) => {
               hasAll = false;
             }
           });
-          console.log(thatFilter.acceptedValues, point[thatFilter.key], 'hasAll', hasAll);
           return hasAll;
         }
         else {

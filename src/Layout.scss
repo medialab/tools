@@ -38,6 +38,13 @@ a
 #main-container
 {
     flex: 5;
+
+    .cards-group
+    {
+        display: inline-block;
+        float: left;
+        width: 50%;
+    }
 }
 
 #aside-container,
@@ -68,5 +75,11 @@ a
     #main-container
     {
         flex: 1;
+        padding: 0;
+    }
+
+    .cards-group
+    {
+        width: 100%!important;
     }
 }

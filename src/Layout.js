@@ -9,6 +9,7 @@ const Layout = ({
   filteredTools = [],
   allTools = [],
   filters = [],
+  groups=[],
   isDataLoaded = false,
   freeTextFilter = '',
   actions: {
@@ -20,18 +21,21 @@ const Layout = ({
     <aside id="aside-container">
       <img src="http://www.medialab.sciences-po.fr/wp-content/uploads/2016/04/logo.png" />
       <h2>Tools we develop, and tools we use</h2>
-
       <input type="text" placeholder="Search a project" value={freeTextFilter} onChange={(evt) => setFreeTextFilter(evt.target.value)}/>
-
       <p>{filteredTools.length} / {allTools.length}</p>
       {filters.map((filter, key) => (
           <FilterGroup setCategoryFilter={setCategoryFilter} filter={filter} key={key} />
         )
       )}
-
     </aside>
     <section id="main-container">
-      <CardsList loading={!isDataLoaded} cards={filteredTools} />
+      {groups.map((group, key) => (
+        <section className="cards-group" key={key}>
+          <h2>{group.labels.en}</h2>
+          <CardsList loading={!isDataLoaded} cards={filteredTools.filter(item => item.group === group.value)} />
+        </section>
+      ))
+      }
     </section>
   </div>
 );

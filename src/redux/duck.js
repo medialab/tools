@@ -76,6 +76,7 @@ const DATA_DEFAULT_STATE = {
   filteredTools: [],
   filtersModels: [],
   filters: [],
+  groups: [],
   dataLoaded: false,
   freeTextFilter: ''
 }
@@ -109,14 +110,15 @@ function data(state = DATA_DEFAULT_STATE, action) {
         filteredTools: consumeFilters(state.allTools, filters)
       };
     case FETCH_DATA + '_SUCCESS':
-      const {allTools, filters: filtersInit} = analyzeData(action.result);
+      const {allTools, filters: filtersInit, groups} = analyzeData(action.result);
       const filledFilters = initFilters(filtersInit, allTools);
       return {
         ...state,
         dataLoaded: true,
         allTools: allTools.slice(),
         filteredTools: allTools.slice(),
-        filters: filledFilters
+        filters: filledFilters,
+        groups: groups
       };
     case FETCH_DATA + '_FAILURE':
       return {
@@ -140,6 +142,7 @@ export default combineReducers({
 const allTools = state => state.data.allTools || [];
 const filteredTools = state => state.data.filteredTools || [];
 const filters = state => state.data.filters || [];
+const groups = state => state.data.groups || [];
 const freeTextFilter = state => state.data.freeTextFilter || '';
 const isDataLoaded = state => state.data.dataLoaded || false;
 
@@ -148,5 +151,6 @@ export const selector = createStructuredSelector({
   filteredTools,
   isDataLoaded,
   freeTextFilter,
-  filters
+  filters,
+  groups
 });

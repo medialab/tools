@@ -2,8 +2,8 @@
 
 .card
 {
-    min-width: 20%;
-    max-width: 21%;
+    min-width: 40%;
+    max-width: 41%;
     margin-bottom: 50px;
     padding: $large-gutter;
 
@@ -12,6 +12,8 @@
     {
         min-width: 100%;
         max-width: unset;
+        margin: 0;
+        padding: 5px;
     }
     .by
     {
