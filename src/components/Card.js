@@ -14,24 +14,27 @@ const Card = ({
   authors,
   by_medialab
 }) => {
-  const manetInstance = 'http://manet.medialab.sciences-po.fr/?';
+  const manetInstance = 'http://manet.medialab.sciences-po.fr/?',
+        width = 1024/2,
+        height = 768/2
+
   const captureParams = {
     url:(url ? url : source),
     delay:1000,
     format:'jpeg',
-    width:(1024/2),
-    height:(768/2),
-    zoom:0.5
+    width:width,
+    height:height,
+    zoom:0.5,
+    clipRect:'0,0,'+width+','+height
   };
   const capture = manetInstance + params.encode(captureParams);
   const fig = image ? image : capture;
   const style = {
-    background: 'url(' + fig + ') no-repeat center center',
-    backgroundSize: '99%'
+    backgroundImage: 'url(' + fig + ')'
   };
 
   return (
-    <div 
+    <div
       className="card"
       itemScope
       itemType="http://schema.org/SoftwareApplication"

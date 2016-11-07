@@ -19,8 +19,7 @@ const Layout = ({
 }) => (
   <div id="layout-wrapper">
     <aside id="aside-container">
-      <img src="http://www.medialab.sciences-po.fr/wp-content/uploads/2016/04/logo.png" />
-      <h2>Tools we develop, and tools we use</h2>
+      <img className="logo" src="assets/images/logo_medialab.svg" />
       <input type="text" placeholder="Search a project" value={freeTextFilter} onChange={(evt) => setFreeTextFilter(evt.target.value)}/>
       <p>{filteredTools.length} / {allTools.length}</p>
       {filters.map((filter, key) => (
